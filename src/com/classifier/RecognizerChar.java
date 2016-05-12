@@ -6,12 +6,11 @@ import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.List;
-import weka.core.Instance;
 
 public class RecognizerChar {
 
-    private static final String PATH_TRAIN = "digitos";
-    private static final String PATH_TEST = "digitos";
+    public static String PATH_TRAIN = "";
+    public static String PATH_TEST_SET = "";
     
     private static final String DIGITOS = "digitos";
     private static final String LETRAS = "letras";
@@ -56,9 +55,9 @@ public class RecognizerChar {
         return NNCTrain.classifyInstance(pathImage);
     }
     
-    public static void runSetTest() throws Exception {
-        initTest(PATH_TEST,classes);
-        printStatistics();
+    public static String runSetTest() throws Exception {
+        initTest(PATH_TEST_SET,classes);
+        return printStatistics();
     }
 
     static private void initTest(String pathTest, FastVector classes) throws Exception {
@@ -78,31 +77,30 @@ public class RecognizerChar {
         eTest.evaluateModel(NNCTrain.getClassifier(), testSet);
     }
    
-
-    private static void printStatistics() throws Exception {
+    private static String printStatistics() throws Exception {
+        String statistics = "";
         for (int i = 0; i < testSet.numInstances(); i++) {
             double pred = NNCTrain.getClassifier().classifyInstance(testSet.instance(i));
-            System.out.println("ID: " + paths.get(i));
+            statistics += "ID: " + paths.get(i) + "\n";
             String actual = testSet.classAttribute().value((int) testSet.instance(i).classValue());
             String predicted = testSet.classAttribute().value((int) pred);
-            System.out.println("actual: " + actual);
-            System.out.println("predicted: " + predicted);
-            System.out.println();
+            statistics += "actual: " + actual + "\n";
+            statistics += "predicted: " + predicted + "\n \n";
             if (actual.equals(predicted)) {
-                System.out.println("SUCCESS");
+                statistics += "SUCCESS" + "\n";
             } else {
-                System.out.println("FAILURE");
+                statistics += "FAILURE" + "\n";
             }
         }
 
         if (verbose) {
-            System.out.println(eTest.toSummaryString(true));
-            System.out.println(eTest.toClassDetailsString());
+            statistics += eTest.toSummaryString(true) + "\n";
+            statistics += eTest.toClassDetailsString() + "\n";
         }
 
-        System.out.println("precision: " + eTest.weightedPrecision());
-        System.out.println("recall: " + eTest.weightedRecall());
-        System.out.println("f-measure: " + eTest.weightedFMeasure());
+        statistics += "precision: " + eTest.weightedPrecision() + "\n";
+        statistics += "recall: " + eTest.weightedRecall() + "\n";
+        statistics += "f-measure: " + eTest.weightedFMeasure() + "\n";
+        return statistics;
     }
-
 }
