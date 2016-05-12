@@ -9,41 +9,37 @@ import java.util.List;
 
 public class RecognizerChar {
 
-    public static String PATH_TRAIN = "";
-    public static String PATH_TEST_SET = "";
+    public String PATH_TRAIN = "";
+    public String PATH_TEST_SET = "";
     
     private static final String DIGITOS = "digitos";
     private static final String LETRAS = "letras";
     private static final String DIGITOS_LETRAS = "digitos_letras";
     private static final String SEM_CARACTERES = "sem_caracteres";
 
-    static List<String> paths = new ArrayList<String>();
-    static NeuralNetworkClassifier NNCTrain;
-    static Evaluation eTest;
-    static Instances testSet;
+    private final List<String> paths;
+    private final boolean verbose = Boolean.parseBoolean("-v");
+    private final FastVector classes;
+    private Evaluation eTest;
+    private Instances testSet;
+    
+    public NeuralNetworkClassifier NNCTrain;
 
-    static boolean verbose;
-    static FastVector classes;
-
-    /**
-     *
-     * @throws Exception
-     */
-    public static void train() throws Exception {
-        verbose = Boolean.parseBoolean("-v");
-
+    public RecognizerChar() {
+        this.paths = new ArrayList<String>();
         classes = new FastVector(4);
         classes.addElement(DIGITOS);
         classes.addElement(LETRAS);
         classes.addElement(DIGITOS_LETRAS);
-        classes.addElement(SEM_CARACTERES);
+        classes.addElement(SEM_CARACTERES);        
+    }
 
+    public void train() throws Exception {
         NNCTrain = new NeuralNetworkClassifier(classes);
         String folderDigits = PATH_TRAIN + "/digitos";
         String folderLetters = PATH_TRAIN + "/letras";
         String folderBoth = PATH_TRAIN + "/digitos_letras";
         String nothing = PATH_TRAIN + "/sem_caracteres";
-
         NNCTrain.buildSet(folderDigits, DIGITOS, null);
         NNCTrain.buildSet(folderLetters, LETRAS, null);
         NNCTrain.buildSet(folderBoth, DIGITOS_LETRAS, null);
@@ -51,16 +47,16 @@ public class RecognizerChar {
         NNCTrain.buildClassifier();        
     }
     
-    public static String classsifyImage(String pathImage) throws Exception {
+    public String classsifyImage(String pathImage) throws Exception {
         return NNCTrain.classifyInstance(pathImage);
     }
     
-    public static String runSetTest() throws Exception {
+    public String runSetTest() throws Exception {
         initTest(PATH_TEST_SET,classes);
-        return printStatistics();
+        return getStatistics();
     }
 
-    static private void initTest(String pathTest, FastVector classes) throws Exception {
+    private void initTest(String pathTest, FastVector classes) throws Exception {
         eTest = new Evaluation(NNCTrain.getSet());
         ClassifierSetBuilder testBuilder = new ClassifierSetBuilder(classes);
         String folderTestLetters = pathTest + "/letras";
@@ -77,7 +73,7 @@ public class RecognizerChar {
         eTest.evaluateModel(NNCTrain.getClassifier(), testSet);
     }
    
-    private static String printStatistics() throws Exception {
+    private String getStatistics() throws Exception {
         String statistics = "";
         for (int i = 0; i < testSet.numInstances(); i++) {
             double pred = NNCTrain.getClassifier().classifyInstance(testSet.instance(i));

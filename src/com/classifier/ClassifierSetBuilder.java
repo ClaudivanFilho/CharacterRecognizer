@@ -6,30 +6,32 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by marcos on 4/17/16.
  */
-public class ClassifierSetBuilder {
+public class ClassifierSetBuilder implements Serializable {
+    
     public static final int CAPACITY = 257;
     public static final int INDEX = 256;
     private Instances set;
     private FastVector wekaAttributes;
 
     public ClassifierSetBuilder(FastVector classes) {
-        FastVector wekaAttributes = new FastVector(CAPACITY);
+        FastVector wekaAttrs = new FastVector(CAPACITY);
         for (int i = 0; i < INDEX; i++) {
             Attribute attr = new Attribute("numeric" + i);
-            wekaAttributes.addElement(attr);
+            wekaAttrs.addElement(attr);
         }
         Attribute attr = new Attribute("classes", classes);
 
-        wekaAttributes.addElement(attr);
-        Instances trainingSet = new Instances("Rel", wekaAttributes, 1);
+        wekaAttrs.addElement(attr);
+        Instances trainingSet = new Instances("Rel", wekaAttrs, 1);
         trainingSet.setClassIndex(INDEX);
         this.set = trainingSet;
-        this.wekaAttributes = wekaAttributes;
+        this.wekaAttributes = wekaAttrs;
     }
 
     public void buildSet(String folderName, String clazz, List<String> files) throws Exception {

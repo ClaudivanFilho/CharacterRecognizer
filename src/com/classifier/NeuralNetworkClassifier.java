@@ -2,8 +2,8 @@ package com.classifier;
 
 import static com.classifier.ClassifierSetBuilder.CAPACITY;
 import static com.classifier.ClassifierSetBuilder.INDEX;
-import static com.classifier.RecognizerChar.testSet;
 import java.io.File;
+import java.io.Serializable;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Attribute;
@@ -16,17 +16,20 @@ import weka.core.Instance;
 /**
  * Created by marcos on 4/17/16.
  */
-public class NeuralNetworkClassifier {
+public class NeuralNetworkClassifier implements Serializable {
 
     private Classifier model;
     private ClassifierSetBuilder setBuilder;
     private FastVector classes;
+    
+    public String last_train;
 
 
     public NeuralNetworkClassifier(FastVector classes) {
         this.classes = classes;
         this.model = new MultilayerPerceptron();
         this.setBuilder = new ClassifierSetBuilder(classes);
+        this.last_train = "";
     }
 
     public void buildClassifier() throws Exception {
