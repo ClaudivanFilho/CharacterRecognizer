@@ -47,11 +47,14 @@ public class NeuralNetworkClassifier implements Serializable {
             wekaAttributes.addElement(attr);
         }
         Attribute attr = new Attribute("classes", classes);
-
         wekaAttributes.addElement(attr);
+        
+        Instances trainingSet = new Instances("Rel", wekaAttributes, 1);
+        trainingSet.setClassIndex(INDEX);
+        
         File f = new File(imagePath);
         double[] histogram = Histogram.buildHistogram(f);
-         Instance imageInstance = new Instance(ClassifierSetBuilder.CAPACITY);
+        Instance imageInstance = new Instance(ClassifierSetBuilder.CAPACITY);
         for (int i = 0; i < histogram.length; i++) {
             imageInstance.setValue((Attribute) wekaAttributes.elementAt(i), histogram[i]);
         }

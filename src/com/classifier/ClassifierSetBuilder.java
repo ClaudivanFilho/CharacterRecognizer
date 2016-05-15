@@ -47,7 +47,6 @@ public class ClassifierSetBuilder implements Serializable {
     }
 
     private void createSet(FastVector wekaAttributes, double[] histogram, String classe) {
-
         Instance imageInstance = new Instance(CAPACITY);
         for (int i = 0; i < histogram.length; i++) {
             imageInstance.setValue((Attribute) wekaAttributes.elementAt(i), histogram[i]);
