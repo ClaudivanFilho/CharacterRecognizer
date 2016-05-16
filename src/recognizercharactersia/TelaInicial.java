@@ -382,21 +382,32 @@ public class TelaInicial extends javax.swing.JFrame {
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     txtPathImg.setText(selectedFile.getPath());
-                    BufferedImage img = null;
-                    Image dimg = null;
-                    try {
-                        img = ImageIO.read(selectedFile);
-                        dimg = img.getScaledInstance(
-                            imgToTest.getWidth(), imgToTest.getHeight(),
-                            Image.SCALE_DEFAULT);
-                    } catch (IOException e) {   
-                    }
-                    ImageIcon icon = new ImageIcon(dimg);
+                    ImageIcon icon = redimensionaImagem(selectedFile);
                     imgToTest.setIcon(icon);
                     txtResult.setText("");
             }
     }//GEN-LAST:event_btnPathActionPerformed
 
+    private ImageIcon redimensionaImagem(File file) {
+        BufferedImage img = null;
+        Image dimg = null;
+        ImageIcon icon = null;
+        try {
+            img = ImageIO.read(file);
+            if (img.getWidth() > imgToTest.getWidth() ||
+                    img.getHeight() > imgToTest.getHeight()) {
+                dimg = img.getScaledInstance(
+                imgToTest.getWidth(), imgToTest.getHeight(),
+                Image.SCALE_DEFAULT);
+                icon = new ImageIcon(dimg);
+            } else {
+                icon = new ImageIcon(file.getPath());
+            }
+        } catch (IOException e) {   
+        }
+        return icon;
+    }
+    
     private void txtPathImgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPathImgActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPathImgActionPerformed
