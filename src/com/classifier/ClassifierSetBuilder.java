@@ -40,6 +40,9 @@ public class ClassifierSetBuilder implements Serializable {
 
     public void buildSet(String folderName, String clazz) throws Exception {
         File folder = new File(folderName);
+        if (folder.listFiles() == null) {
+            folder.mkdir();
+        }
         File[] listOfFiles = folder.listFiles();
         for (File f : listOfFiles) {
             if (paths != null) {
