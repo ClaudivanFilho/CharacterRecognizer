@@ -7,6 +7,7 @@ import weka.core.Instances;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,10 +17,13 @@ public class ClassifierSetBuilder implements Serializable {
     
     public static final int CAPACITY = 257;
     public static final int INDEX = 256;
-    private Instances set;
-    private FastVector wekaAttributes;
+    
+    private final Instances set;
+    private final FastVector wekaAttributes;
+    private final ArrayList<String> paths;
 
     public ClassifierSetBuilder(FastVector classes) {
+        paths = new ArrayList<String>();
         FastVector wekaAttrs = new FastVector(CAPACITY);
         for (int i = 0; i < INDEX; i++) {
             Attribute attr = new Attribute("numeric" + i);
@@ -34,12 +38,12 @@ public class ClassifierSetBuilder implements Serializable {
         this.wekaAttributes = wekaAttrs;
     }
 
-    public void buildSet(String folderName, String clazz, List<String> files) throws Exception {
+    public void buildSet(String folderName, String clazz) throws Exception {
         File folder = new File(folderName);
         File[] listOfFiles = folder.listFiles();
         for (File f : listOfFiles) {
-            if (files != null) {
-                files.add(f.getPath());
+            if (paths != null) {
+                paths.add(f.getPath());
             }
             double[] histogram = Histogram.buildHistogram(f);
             createSet(wekaAttributes, histogram, clazz);
@@ -59,5 +63,9 @@ public class ClassifierSetBuilder implements Serializable {
 
     public Instances getSet() {
         return this.set;
+    }
+    
+    public List<String> getPaths() {
+        return paths;
     }
 }

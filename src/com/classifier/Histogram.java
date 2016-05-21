@@ -27,6 +27,7 @@ public class Histogram {
      *
      * @param infile - the image file.
      * @return - a histogram of grayscale percentage counts.
+     * @throws java.lang.Exception
      */
     protected static double[] buildHistogram(File infile) throws Exception {
         BufferedImage input = ImageIO.read(infile);

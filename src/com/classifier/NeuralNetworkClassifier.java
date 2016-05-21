@@ -10,7 +10,6 @@ import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instances;
 
-import java.util.List;
 import weka.core.Instance;
 
 /**
@@ -18,9 +17,9 @@ import weka.core.Instance;
  */
 public class NeuralNetworkClassifier implements Serializable {
 
-    private Classifier model;
-    private ClassifierSetBuilder setBuilder;
-    private FastVector classes;
+    private final Classifier model;
+    private final ClassifierSetBuilder setBuilder;
+    private final FastVector classes;
     
     public String last_train;
 
@@ -66,7 +65,7 @@ public class NeuralNetworkClassifier implements Serializable {
         return this.setBuilder.getSet();
     }
 
-    public void buildSet(String folderName, String classe, List<String> files) throws Exception {
-        setBuilder.buildSet(folderName, classe, files);
+    public void buildSet(String folderName, String classe) throws Exception {
+        setBuilder.buildSet(folderName, classe);
     }
 }

@@ -4,9 +4,6 @@ import weka.classifiers.Evaluation;
 import weka.core.FastVector;
 import weka.core.Instances;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class RecognizerChar {
 
     public String PATH_TRAIN = "";
@@ -17,16 +14,15 @@ public class RecognizerChar {
     private static final String DIGITOS_LETRAS = "digitos_letras";
     private static final String SEM_CARACTERES = "sem_caracteres";
 
-    private final List<String> paths;
     private final boolean verbose = Boolean.parseBoolean("-v");
     private final FastVector classes;
     private Evaluation eTest;
     private Instances testSet;
+    private ClassifierSetBuilder testBuilder;
     
     public NeuralNetworkClassifier NNCTrain;
 
     public RecognizerChar() {
-        this.paths = new ArrayList<String>();
         classes = new FastVector(4);
         classes.addElement(DIGITOS);
         classes.addElement(LETRAS);
@@ -36,14 +32,10 @@ public class RecognizerChar {
 
     public void train() throws Exception {
         NNCTrain = new NeuralNetworkClassifier(classes);
-        String folderDigits = PATH_TRAIN + "/digitos";
-        String folderLetters = PATH_TRAIN + "/letras";
-        String folderBoth = PATH_TRAIN + "/digitos_letras";
-        String nothing = PATH_TRAIN + "/sem_caracteres";
-        NNCTrain.buildSet(folderDigits, DIGITOS, null);
-        NNCTrain.buildSet(folderLetters, LETRAS, null);
-        NNCTrain.buildSet(folderBoth, DIGITOS_LETRAS, null);
-        NNCTrain.buildSet(nothing, SEM_CARACTERES, null);
+        NNCTrain.buildSet(PATH_TRAIN + "/digitos", DIGITOS);
+        NNCTrain.buildSet(PATH_TRAIN + "/letras", LETRAS);
+        NNCTrain.buildSet(PATH_TRAIN + "/digitos_letras", DIGITOS_LETRAS);
+        NNCTrain.buildSet(PATH_TRAIN + "/sem_caracteres", SEM_CARACTERES);
         NNCTrain.buildClassifier();        
     }
     
@@ -52,24 +44,18 @@ public class RecognizerChar {
     }
     
     public String runSetTest() throws Exception {
-        initTest(PATH_TEST_SET,classes);
+        initTest();
         return getStatistics();
     }
 
-    private void initTest(String pathTest, FastVector classes) throws Exception {
-        eTest = new Evaluation(NNCTrain.getSet());
-        ClassifierSetBuilder testBuilder = new ClassifierSetBuilder(classes);
-        String folderTestLetters = pathTest + "/letras";
-        String folderTestDigits = pathTest + "/digitos";
-        String folderTestBoth = pathTest + "/digitos_letras";
-        String nothingTest = pathTest + "/sem_caracteres";
-
-        testBuilder.buildSet(folderTestLetters, LETRAS, paths);
-        testBuilder.buildSet(folderTestDigits, DIGITOS, paths);
-        testBuilder.buildSet(folderTestBoth, DIGITOS_LETRAS, paths);
-        testBuilder.buildSet(nothingTest, SEM_CARACTERES, paths);
-
+    private void initTest() throws Exception {
+        testBuilder = new ClassifierSetBuilder(classes);
+        testBuilder.buildSet(PATH_TEST_SET + "/letras", LETRAS);
+        testBuilder.buildSet(PATH_TEST_SET + "/digitos", DIGITOS);
+        testBuilder.buildSet(PATH_TEST_SET + "/digitos_letras", DIGITOS_LETRAS);
+        testBuilder.buildSet(PATH_TEST_SET + "/sem_caracteres", SEM_CARACTERES);
         testSet = testBuilder.getSet();
+        eTest = new Evaluation(NNCTrain.getSet());
         eTest.evaluateModel(NNCTrain.getClassifier(), testSet);
     }
    
@@ -77,7 +63,7 @@ public class RecognizerChar {
         String statistics = "";
         for (int i = 0; i < testSet.numInstances(); i++) {
             double pred = NNCTrain.getClassifier().classifyInstance(testSet.instance(i));
-            statistics += "ID: " + paths.get(i) + "\n";
+            statistics += "ID: " + testBuilder.getPaths().get(i) + "\n";
             String actual = testSet.classAttribute().value((int) testSet.instance(i).classValue());
             String predicted = testSet.classAttribute().value((int) pred);
             statistics += "actual: " + actual + "\n";
