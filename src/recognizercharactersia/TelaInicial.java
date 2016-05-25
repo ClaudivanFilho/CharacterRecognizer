@@ -531,8 +531,9 @@ public class TelaInicial extends javax.swing.JFrame {
         Thread thread = new Thread(){
             @Override
             public void run(){
-                try {    
-                    myRecognizer.train("MultilayerPerceptron");
+                try {
+                    System.out.println((String) boxTrain.getSelectedItem());
+                    myRecognizer.train((String) boxTrain.getSelectedItem());
                     myRecognizer.NNCTrain.last_train = 
                             new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date());
                     // salva o atual treinamento

@@ -22,7 +22,7 @@ public class ClassifierSerializer {
             out.writeObject(classifier);
             out.close();
             fileOut.close();
-            System.out.printf("Serialized data is saved in classifier" + classifier + ".ser");
+            System.out.printf("Serialized data is saved in classifier-" + classifier.classifierName + ".ser");
         } catch (IOException i) {
             i.printStackTrace();
         }
