@@ -5,7 +5,9 @@ import static com.classifier.ClassifierSetBuilder.INDEX;
 import java.io.File;
 import java.io.Serializable;
 import weka.classifiers.Classifier;
+import weka.classifiers.trees.DecisionStump;
 import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.bayes.BayesNet;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instances;
@@ -15,18 +17,30 @@ import weka.core.Instance;
 /**
  * Created by marcos on 4/17/16.
  */
-public class NeuralNetworkClassifier implements Serializable {
+public class MyClassifier implements Serializable {
 
     private final Classifier model;
     private final ClassifierSetBuilder setBuilder;
     private final FastVector classes;
     
     public String last_train;
+    public String classifierName;
+    
+    public static String[] classifiers = {"MultilayerPerceptron", "BayesNet", "DecisionStump"};
 
 
-    public NeuralNetworkClassifier(FastVector classes) {
+    public MyClassifier(FastVector classes, String classifier) {
         this.classes = classes;
-        this.model = new MultilayerPerceptron();
+        if (classifier.equals("MultilayerPerceptron")) {
+            this.model = new MultilayerPerceptron();
+        } else if (classifier.equals("BayesNet")) {
+            this.model = new BayesNet();
+        } else if (classifier.equals("DecisionStump")) {
+            this.model = new DecisionStump();
+        } else {
+            this.model = new MultilayerPerceptron();
+        }
+        this.classifierName = classifier;
         this.setBuilder = new ClassifierSetBuilder(classes);
         this.last_train = "";
     }

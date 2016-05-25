@@ -5,9 +5,11 @@
  */
 package recognizercharactersia;
 
+import com.classifier.MyClassifier;
 import com.classifier.RecognizerChar;
 import com.serializer.ClassifierSerializer;
 import java.awt.Image;
+import java.awt.event.ItemEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +37,13 @@ public class TelaInicial extends javax.swing.JFrame {
         initComponents();
         imgLoadingTrain.setVisible(false);
         txtTraining.setVisible(false);
-        if (ClassifierSerializer.hasClassifier()) {
-            myRecognizer.NNCTrain = ClassifierSerializer.load();
+        for (String classifier : MyClassifier.classifiers) {
+            boxTrain.addItem(classifier);
+            boxTestImg.addItem(classifier);
+            boxTestSet.addItem(classifier);
+        }
+        if (ClassifierSerializer.hasClassifier("MultilayerPerceptron")) {
+            myRecognizer.NNCTrain = ClassifierSerializer.load("MultilayerPerceptron");
             txtDateLT.setText(myRecognizer.NNCTrain.last_train);
         }
     }
@@ -62,6 +69,8 @@ public class TelaInicial extends javax.swing.JFrame {
         imgToTest = new javax.swing.JLabel();
         txtResult = new javax.swing.JTextField();
         btnTestar = new javax.swing.JButton();
+        jLabel13 = new javax.swing.JLabel();
+        boxTestImg = new javax.swing.JComboBox();
         jPanel2 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
@@ -72,6 +81,8 @@ public class TelaInicial extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtSetResult = new javax.swing.JTextArea();
         btnTestarSet = new javax.swing.JButton();
+        boxTestSet = new javax.swing.JComboBox();
+        jLabel12 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
@@ -83,6 +94,8 @@ public class TelaInicial extends javax.swing.JFrame {
         txtDateLT = new javax.swing.JTextField();
         imgLoadingTrain = new javax.swing.JLabel();
         txtTraining = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        boxTrain = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,6 +131,16 @@ public class TelaInicial extends javax.swing.JFrame {
             }
         });
 
+        jLabel13.setText("Classificador:");
+
+        boxTestImg.setModel(new javax.swing.DefaultComboBoxModel(new String[] { }));
+        boxTestImg.setEnabled(false);
+        boxTestImg.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                boxTestImgItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -130,6 +153,9 @@ public class TelaInicial extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(37, 37, 37)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(imgToTest, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13)
+                    .addComponent(boxTestImg, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(jPanel1Layout.createSequentialGroup()
@@ -143,8 +169,7 @@ public class TelaInicial extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(txtPathImg, javax.swing.GroupLayout.PREFERRED_SIZE, 434, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnPath, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addComponent(imgToTest, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(btnPath, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(42, 42, 42))
         );
         jPanel1Layout.setVerticalGroup(
@@ -161,9 +186,13 @@ public class TelaInicial extends javax.swing.JFrame {
                     .addComponent(txtPathImg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnPath))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(boxTestImg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(imgToTest, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(imgToTest, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -209,6 +238,16 @@ public class TelaInicial extends javax.swing.JFrame {
             }
         });
 
+        boxTestSet.setModel(new javax.swing.DefaultComboBoxModel(new String[] { }));
+        boxTestSet.setEnabled(false);
+        boxTestSet.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                boxTestSetItemStateChanged(evt);
+            }
+        });
+
+        jLabel12.setText("Classificador:");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -231,7 +270,9 @@ public class TelaInicial extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btnPathSet, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane1))))))
+                                    .addComponent(jScrollPane1)
+                                    .addComponent(jLabel12)
+                                    .addComponent(boxTestSet, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap(39, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -247,10 +288,14 @@ public class TelaInicial extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtPathSet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnPathSet))
+                .addGap(7, 7, 7)
+                .addComponent(jLabel12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(boxTestSet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnTestarSet, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -301,6 +346,15 @@ public class TelaInicial extends javax.swing.JFrame {
         txtTraining.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         txtTraining.setText("TREINANDO...");
 
+        jLabel11.setText("Classificador:");
+
+        boxTrain.setModel(new javax.swing.DefaultComboBoxModel(new String[] { }));
+        boxTrain.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                boxTrainItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -321,17 +375,21 @@ public class TelaInicial extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(btnPathTrain, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jLabel9))
-                            .addComponent(txtDateLT, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel11)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(boxTrain, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtDateLT, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE))))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(223, 223, 223)
-                        .addComponent(btnTreinar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(126, 126, 126)
-                        .addComponent(imgLoadingTrain))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(233, 233, 233)
-                        .addComponent(txtTraining)))
-                .addContainerGap(42, Short.MAX_VALUE))
+                        .addGap(123, 123, 123)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(97, 97, 97)
+                                .addComponent(btnTreinar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(imgLoadingTrain)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(107, 107, 107)
+                                .addComponent(txtTraining)))))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -347,16 +405,20 @@ public class TelaInicial extends javax.swing.JFrame {
                     .addComponent(txtPathTrain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnPathTrain))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(boxTrain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtDateLT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
+                .addGap(13, 13, 13)
                 .addComponent(btnTreinar, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(imgLoadingTrain, javax.swing.GroupLayout.PREFERRED_SIZE, 145, Short.MAX_VALUE)
+                .addComponent(imgLoadingTrain, javax.swing.GroupLayout.PREFERRED_SIZE, 147, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtTraining, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(54, 54, 54))
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Treinamento", jPanel3);
@@ -470,7 +532,7 @@ public class TelaInicial extends javax.swing.JFrame {
             @Override
             public void run(){
                 try {    
-                    myRecognizer.train();
+                    myRecognizer.train("MultilayerPerceptron");
                     myRecognizer.NNCTrain.last_train = 
                             new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date());
                     // salva o atual treinamento
@@ -495,6 +557,42 @@ public class TelaInicial extends javax.swing.JFrame {
     private void txtDateLTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDateLTActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtDateLTActionPerformed
+
+    private void boxTestSetItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_boxTestSetItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String classifier = (String) evt.getItem();
+            boxTestImg.setSelectedItem(evt.getItem());
+            boxTrain.setSelectedItem(evt.getItem());
+            if (ClassifierSerializer.hasClassifier(classifier)) {
+                myRecognizer.NNCTrain = ClassifierSerializer.load(classifier);
+            }
+        }
+    }//GEN-LAST:event_boxTestSetItemStateChanged
+
+    private void boxTestImgItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_boxTestImgItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) { 
+            String classifier = (String) evt.getItem();
+            boxTestSet.setSelectedItem(evt.getItem());
+            boxTrain.setSelectedItem(evt.getItem());
+            if (ClassifierSerializer.hasClassifier(classifier)) {
+                myRecognizer.NNCTrain = ClassifierSerializer.load(classifier);
+            }
+        }
+    }//GEN-LAST:event_boxTestImgItemStateChanged
+
+    private void boxTrainItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_boxTrainItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) { 
+            String classifier = (String) evt.getItem();
+            boxTestImg.setSelectedItem(evt.getItem());
+            boxTestSet.setSelectedItem(evt.getItem());
+            if (ClassifierSerializer.hasClassifier(classifier)) {
+                myRecognizer.NNCTrain = ClassifierSerializer.load(classifier);
+                txtDateLT.setText(myRecognizer.NNCTrain.last_train);
+            } else {
+                txtDateLT.setText("");
+            }
+        }
+    }//GEN-LAST:event_boxTrainItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -532,6 +630,9 @@ public class TelaInicial extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> boxTestImg;
+    private javax.swing.JComboBox<String> boxTestSet;
+    private javax.swing.JComboBox<String> boxTrain;
     private javax.swing.JButton btnPath;
     private javax.swing.JButton btnPathSet;
     private javax.swing.JButton btnPathTrain;
@@ -542,6 +643,9 @@ public class TelaInicial extends javax.swing.JFrame {
     private javax.swing.JLabel imgToTest;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

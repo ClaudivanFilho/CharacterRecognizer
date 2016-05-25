@@ -20,7 +20,7 @@ public class RecognizerChar {
     private Instances testSet;
     private ClassifierSetBuilder testBuilder;
     
-    public NeuralNetworkClassifier NNCTrain;
+    public MyClassifier NNCTrain;
 
     public RecognizerChar() {
         classes = new FastVector(4);
@@ -30,8 +30,8 @@ public class RecognizerChar {
         classes.addElement(SEM_CARACTERES);        
     }
 
-    public void train() throws Exception {
-        NNCTrain = new NeuralNetworkClassifier(classes);
+    public void train(String classifier) throws Exception {
+        NNCTrain = new MyClassifier(classes, classifier);
         NNCTrain.buildSet(PATH_TRAIN + "/digitos", DIGITOS);
         NNCTrain.buildSet(PATH_TRAIN + "/letras", LETRAS);
         NNCTrain.buildSet(PATH_TRAIN + "/digitos_letras", DIGITOS_LETRAS);
