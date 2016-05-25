@@ -7,6 +7,7 @@ import java.io.Serializable;
 import weka.classifiers.Classifier;
 import weka.classifiers.trees.DecisionStump;
 import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.bayes.BayesNet;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -26,7 +27,8 @@ public class MyClassifier implements Serializable {
     public String last_train;
     public String classifierName;
     
-    public static String[] classifiers = {"MultilayerPerceptron", "BayesNet", "DecisionStump"};
+    public static String[] classifiers = {"MultilayerPerceptron", "BayesNet", 
+        "DecisionStump", "NaiveBayes"};
 
 
     public MyClassifier(FastVector classes, String classifier) {
@@ -37,6 +39,8 @@ public class MyClassifier implements Serializable {
             this.model = new BayesNet();
         } else if (classifier.equals("DecisionStump")) {
             this.model = new DecisionStump();
+        } else if (classifier.equals("NaiveBayes")) {
+            this.model = new NaiveBayes();
         } else {
             this.model = new MultilayerPerceptron();
         }
@@ -71,7 +75,11 @@ public class MyClassifier implements Serializable {
         for (int i = 0; i < histogram.length; i++) {
             imageInstance.setValue((Attribute) wekaAttributes.elementAt(i), histogram[i]);
         }
-        String predicted = getSet().classAttribute().value((int) this.model.classifyInstance(imageInstance));
+        Instances dataUnlabeled = new Instances("TestInstances", wekaAttributes, 0);
+        dataUnlabeled.add(imageInstance);
+        dataUnlabeled.setClassIndex(dataUnlabeled.numAttributes() - 1); 
+        String predicted = getSet().classAttribute().value((int) this.model.classifyInstance(dataUnlabeled.firstInstance()));
+
         return predicted;
     }
 
