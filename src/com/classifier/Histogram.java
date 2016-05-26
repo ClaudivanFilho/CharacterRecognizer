@@ -14,12 +14,13 @@ import java.util.List;
  */
 public class Histogram {
 
-    private static final double LUMINANCE_RED = 0.299D;
-    private static final double LUMINANCE_GREEN = 0.587D;
-    private static final double LUMINANCE_BLUE = 0.114;
+    private static final double LUMINANCE_RED = 0.333333333333;
+    private static final double LUMINANCE_GREEN = 0.33333333;
+    private static final double LUMINANCE_BLUE = 0.333333333333333;
     private static final int HIST_WIDTH = 256;
     private static final int HIST_HEIGHT = 100;
-
+    private static final int THRESHOLD = 128;
+    
     /**
      * Parses pixels out of an image file, converts the RGB values to
      * its equivalent grayscale value (0-255), then constructs a
@@ -31,21 +32,18 @@ public class Histogram {
      */
     protected static double[] buildHistogram(File infile) throws Exception {
         BufferedImage input = ImageIO.read(infile);
+        input = resizeImage(input);
         int width = input.getWidth();
         int height = input.getHeight();
         List<Integer> graylevels = new ArrayList<Integer>();
-        double maxWidth = 0.0D;
-        double maxHeight = 0.0D;
-        for (int row = 0; row < width; row++) {
-            for (int col = 0; col < height; col++) {
+        for (int col = 0; col < height; col++) {
+            for (int row = 0; row < width; row++) {
                 Color c = new Color(input.getRGB(row, col));
                 int graylevel = (int) (LUMINANCE_RED * c.getRed() +
                         LUMINANCE_GREEN * c.getGreen() +
                         LUMINANCE_BLUE * c.getBlue());
-                graylevels.add(graylevel);
-                maxHeight++;
-                if (graylevel > maxWidth) {
-                    maxWidth = graylevel;
+                if (graylevel > THRESHOLD) {
+                    graylevels.add(col);
                 }
             }
         }
@@ -53,8 +51,18 @@ public class Histogram {
         for (Integer graylevel : (new HashSet<Integer>(graylevels))) {
             int idx = graylevel;
             histogram[idx] +=
-                    Collections.frequency(graylevels, graylevel) * HIST_HEIGHT / maxHeight;
+                    Collections.frequency(graylevels, graylevel);
         }
         return histogram;
+    }
+    
+    private static BufferedImage resizeImage(BufferedImage originalImage){
+        int type = originalImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
+	BufferedImage resizedImage = new BufferedImage(HIST_WIDTH, HIST_WIDTH, type);
+	Graphics2D g = resizedImage.createGraphics();
+	g.drawImage(originalImage, 0, 0, HIST_WIDTH, HIST_WIDTH, null);
+	g.dispose();
+		
+	return resizedImage;
     }
 }

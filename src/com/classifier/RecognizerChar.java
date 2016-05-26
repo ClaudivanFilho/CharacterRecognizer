@@ -1,5 +1,10 @@
 package com.classifier;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import javax.imageio.ImageIO;
 import weka.classifiers.Evaluation;
 import weka.core.FastVector;
 import weka.core.Instances;
@@ -9,6 +14,9 @@ public class RecognizerChar {
     public String PATH_TRAIN = "";
     public String PATH_TEST_SET = "";
     
+    private static final int CHUNK_WIDTH = 128;
+    private static final int CHUNK_HEIGHT = 128;
+
     private static final String DIGITOS = "digitos";
     private static final String LETRAS = "letras";
     private static final String DIGITOS_LETRAS = "digitos_letras";
@@ -40,7 +48,41 @@ public class RecognizerChar {
     }
     
     public String classsifyImage(String pathImage) throws Exception {
-        return NNCTrain.classifyInstance(pathImage);
+        File file = new File(pathImage);
+        FileInputStream fis = new FileInputStream(file);
+        BufferedImage image = ImageIO.read(fis);
+        
+        int rows = image.getHeight() / CHUNK_HEIGHT;
+        int cols = image.getWidth() / CHUNK_WIDTH;
+        boolean possuiDigitos = false;
+        boolean possuiLetras = false;
+
+        for (int x = 0; x < rows; x++) {
+            for (int y = 0; y < cols; y++) {
+                BufferedImage img = new BufferedImage(CHUNK_WIDTH, CHUNK_HEIGHT, image.getType());
+                Graphics2D gr = img.createGraphics();
+                gr.drawImage(image, 0, 0, CHUNK_WIDTH, CHUNK_HEIGHT,
+                        CHUNK_WIDTH * y, CHUNK_HEIGHT * x,
+                        CHUNK_WIDTH * y + CHUNK_WIDTH,
+                        CHUNK_HEIGHT * x + CHUNK_HEIGHT, null);
+                gr.dispose();
+                ImageIO.write(img, "jpg", new File("tmp-test.jpg"));
+                String classificacao = NNCTrain.classifyInstance("tmp-test.jpg");
+                possuiDigitos = possuiDigitos || classificacao.equals(DIGITOS) || classificacao.equals(DIGITOS_LETRAS);
+                possuiLetras = possuiLetras || classificacao.equals(LETRAS) || classificacao.equals(DIGITOS_LETRAS);
+            }
+        }
+        
+        if (possuiDigitos && possuiLetras) {
+            return DIGITOS_LETRAS;
+        } else if (possuiDigitos) {
+            return DIGITOS;
+        } else if (possuiLetras) {
+            return LETRAS;
+        } else {
+            return SEM_CARACTERES;
+        }
+        //return NNCTrain.classifyInstance(pathImage);
     }
     
     public String runSetTest() throws Exception {
@@ -67,11 +109,11 @@ public class RecognizerChar {
             String actual = testSet.classAttribute().value((int) testSet.instance(i).classValue());
             String predicted = testSet.classAttribute().value((int) pred);
             statistics += "actual: " + actual + "\n";
-            statistics += "predicted: " + predicted + "\n \n";
+            statistics += "predicted: " + predicted + "\n";
             if (actual.equals(predicted)) {
-                statistics += "SUCCESS" + "\n";
+                statistics += "SUCCESS" + "\n\n";
             } else {
-                statistics += "FAILURE" + "\n";
+                statistics += "FAILURE" + "\n\n";
             }
         }
 
